@@ -45,22 +45,20 @@ class MainActivity : Activity() {
 
         val dispensador1 = EditText(this)
         dispensador1.hint = "Dispensador 1"
-        dispensador1.inputType = 2
         pantalla.addView(dispensador1)
 
         val dispensador2 = EditText(this)
         dispensador2.hint = "Dispensador 2"
-        dispensador2.inputType = 2
         pantalla.addView(dispensador2)
 
         val lecturaInicial = EditText(this)
         lecturaInicial.hint = "Lectura inicial"
-        lecturaInicial.inputType = 2
+        lecturaInicial.inputType = 8194
         pantalla.addView(lecturaInicial)
 
         val lecturaFinal = EditText(this)
         lecturaFinal.hint = "Lectura final"
-        lecturaFinal.inputType = 2
+        lecturaFinal.inputType = 8194
         pantalla.addView(lecturaFinal)
 
         val observaciones = EditText(this)
@@ -72,6 +70,23 @@ class MainActivity : Activity() {
         boton.text = "GUARDAR RELEVO"
 
         boton.setOnClickListener {
+
+            val preferencias = getSharedPreferences(
+                "relevos",
+                MODE_PRIVATE
+            )
+
+            preferencias.edit()
+                .putString("fecha", fecha.text.toString())
+                .putString("operario", operario.text.toString())
+                .putString("turno", turno.text.toString())
+                .putString("dispensador1", dispensador1.text.toString())
+                .putString("dispensador2", dispensador2.text.toString())
+                .putString("lecturaInicial", lecturaInicial.text.toString())
+                .putString("lecturaFinal", lecturaFinal.text.toString())
+                .putString("observaciones", observaciones.text.toString())
+                .apply()
+
             Toast.makeText(
                 this,
                 "Relevo guardado correctamente",
