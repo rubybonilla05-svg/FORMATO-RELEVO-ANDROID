@@ -22,12 +22,10 @@ class MainActivity : Activity() {
         titulo.setTextColor(Color.BLACK)
         titulo.gravity = Gravity.CENTER
         titulo.setPadding(0, 20, 0, 30)
-
         pantalla.addView(titulo)
 
         val fecha = EditText(this)
         fecha.hint = "Fecha"
-        fecha.inputType = 1
         pantalla.addView(fecha)
 
         val operario = EditText(this)
@@ -35,8 +33,35 @@ class MainActivity : Activity() {
         pantalla.addView(operario)
 
         val turno = EditText(this)
-        turno.hint = "Turno"
+        turno.hint = "Turno: Día / Noche"
         pantalla.addView(turno)
+
+        val tituloDispensadores = TextView(this)
+        tituloDispensadores.text = "LECTURAS DE DISPENSADORES"
+        tituloDispensadores.textSize = 20f
+        tituloDispensadores.setTextColor(Color.BLACK)
+        tituloDispensadores.setPadding(0, 30, 0, 15)
+        pantalla.addView(tituloDispensadores)
+
+        val dispensador1 = EditText(this)
+        dispensador1.hint = "Dispensador 1"
+        dispensador1.inputType = 2
+        pantalla.addView(dispensador1)
+
+        val dispensador2 = EditText(this)
+        dispensador2.hint = "Dispensador 2"
+        dispensador2.inputType = 2
+        pantalla.addView(dispensador2)
+
+        val lecturaInicial = EditText(this)
+        lecturaInicial.hint = "Lectura inicial"
+        lecturaInicial.inputType = 2
+        pantalla.addView(lecturaInicial)
+
+        val lecturaFinal = EditText(this)
+        lecturaFinal.hint = "Lectura final"
+        lecturaFinal.inputType = 2
+        pantalla.addView(lecturaFinal)
 
         val observaciones = EditText(this)
         observaciones.hint = "Observaciones"
