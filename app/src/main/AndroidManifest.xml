@@ -6,7 +6,7 @@
         android:label="Formato Relevo"
         android:supportsRtl="true"
       
-android:theme="@android:style/Theme.Material.Light.NoActionBar"
+android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
             android:name=".MainActivity"
             android:exported="true">
