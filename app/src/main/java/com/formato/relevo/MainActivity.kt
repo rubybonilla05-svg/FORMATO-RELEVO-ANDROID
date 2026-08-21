@@ -13,89 +13,67 @@ class MainActivity : Activity() {
 
         val pantalla = LinearLayout(this)
         pantalla.orientation = LinearLayout.VERTICAL
-        pantalla.setPadding(24, 24, 24, 24)
-        pantalla.setBackgroundColor(Color.WHITE)
+        pantalla.setPadding(22, 22, 22, 22)
 
-        val titulo = TextView(this)
-        titulo.text = "FORMATO DE RELEVO"
-        titulo.textSize = 26f
-        titulo.setTextColor(Color.BLACK)
-        titulo.gravity = Gravity.CENTER
-        titulo.setPadding(0, 20, 0, 30)
-        pantalla.addView(titulo)
+        val scroll = ScrollView(this)
+        scroll.addView(pantalla)
 
-        val fecha = EditText(this)
-        fecha.hint = "Fecha"
-        pantalla.addView(fecha)
+        fun titulo(texto: String, tamano: Float): TextView {
+            val t = TextView(this)
+            t.text = texto
+            t.textSize = tamano
+            t.setTextColor(Color.BLACK)
+            t.gravity = Gravity.CENTER
+            t.setPadding(0, 10, 0, 10)
+            return t
+        }
 
-        val operario = EditText(this)
-        operario.hint = "Nombre del operario"
-        pantalla.addView(operario)
+        fun campo(texto: String): EditText {
+            val e = EditText(this)
+            e.hint = texto
+            e.textSize = 18f
+            e.setPadding(0, 5, 0, 5)
+            return e
+        }
 
-        val turno = EditText(this)
-        turno.hint = "Turno: Día / Noche"
-        pantalla.addView(turno)
+        pantalla.addView(titulo("FORMATO DE RELEVO", 28f))
 
-        val tituloDispensadores = TextView(this)
-        tituloDispensadores.text = "LECTURAS DE DISPENSADORES"
-        tituloDispensadores.textSize = 20f
-        tituloDispensadores.setTextColor(Color.BLACK)
-        tituloDispensadores.setPadding(0, 30, 0, 15)
-        pantalla.addView(tituloDispensadores)
+        pantalla.addView(campo("Fecha"))
+        pantalla.addView(campo("Nombre del operario"))
+        pantalla.addView(campo("Turno: Día / Noche"))
 
-        val dispensador1 = EditText(this)
-        dispensador1.hint = "Dispensador 1"
-        pantalla.addView(dispensador1)
+        pantalla.addView(titulo("LECTURAS DE DISPENSADORES", 24f))
 
-        val dispensador2 = EditText(this)
-        dispensador2.hint = "Dispensador 2"
-        pantalla.addView(dispensador2)
+        pantalla.addView(titulo("DISPENSADOR 1", 21f))
+        pantalla.addView(campo("Lectura 1"))
+        pantalla.addView(campo("Lectura 2"))
+        pantalla.addView(campo("Lectura 3"))
+        pantalla.addView(campo("Lectura 4"))
 
-        val lecturaInicial = EditText(this)
-        lecturaInicial.hint = "Lectura inicial"
-        lecturaInicial.inputType = 8194
-        pantalla.addView(lecturaInicial)
+        pantalla.addView(titulo("DISPENSADOR 2", 21f))
+        pantalla.addView(campo("Lectura 1"))
+        pantalla.addView(campo("Lectura 2"))
+        pantalla.addView(campo("Lectura 3"))
+        pantalla.addView(campo("Lectura 4"))
 
-        val lecturaFinal = EditText(this)
-        lecturaFinal.hint = "Lectura final"
-        lecturaFinal.inputType = 8194
-        pantalla.addView(lecturaFinal)
+        pantalla.addView(campo("Lectura inicial"))
+        pantalla.addView(campo("Lectura final"))
 
-        val observaciones = EditText(this)
-        observaciones.hint = "Observaciones"
-        observaciones.minLines = 3
-        pantalla.addView(observaciones)
+        pantalla.addView(campo("Observaciones"))
 
-        val boton = Button(this)
-        boton.text = "GUARDAR RELEVO"
-
-        boton.setOnClickListener {
-
-            val preferencias = getSharedPreferences(
-                "relevos",
-                MODE_PRIVATE
-            )
-
-            preferencias.edit()
-                .putString("fecha", fecha.text.toString())
-                .putString("operario", operario.text.toString())
-                .putString("turno", turno.text.toString())
-                .putString("dispensador1", dispensador1.text.toString())
-                .putString("dispensador2", dispensador2.text.toString())
-                .putString("lecturaInicial", lecturaInicial.text.toString())
-                .putString("lecturaFinal", lecturaFinal.text.toString())
-                .putString("observaciones", observaciones.text.toString())
-                .apply()
-
+        val guardar = Button(this)
+        guardar.text = "GUARDAR RELEVO"
+        guardar.textSize = 18f
+        guardar.setOnClickListener {
             Toast.makeText(
                 this,
                 "Relevo guardado correctamente",
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             ).show()
         }
 
-        pantalla.addView(boton)
+        pantalla.addView(guardar)
 
-        setContentView(pantalla)
+        setContentView(scroll)
     }
 }
