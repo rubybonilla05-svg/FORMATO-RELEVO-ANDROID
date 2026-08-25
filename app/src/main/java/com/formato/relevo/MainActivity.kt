@@ -62,39 +62,70 @@ class MainActivity : Activity() {
 
         pantalla.addView(titulo("LECTURAS DE DISPENSADORES", 24f))
 
-        // DISPENSADOR 1
-        pantalla.addView(titulo("DISPENSADOR 1", 21f))
+        // ================= DISPENSADOR 1 =================
 
-        val d1Lectura1 = campo("Lectura 1 - Inicial")
-        val d1Lectura2 = campo("Lectura 1 - Final")
-        val d1Lectura3 = campo("Lectura 2 - Inicial")
-        val d1Lectura4 = campo("Lectura 2 - Final")
+        pantalla.addView(titulo("DISPENSADOR 1", 22f))
 
-        pantalla.addView(d1Lectura1)
-        pantalla.addView(d1Lectura2)
-        pantalla.addView(d1Lectura3)
-        pantalla.addView(d1Lectura4)
+        pantalla.addView(titulo("CARA 1", 18f))
+        val d1c1Inicial = campo("Cara 1 - Lectura inicial")
+        val d1c1Final = campo("Cara 1 - Lectura final")
+        pantalla.addView(d1c1Inicial)
+        pantalla.addView(d1c1Final)
 
-        val ventaD1 = titulo("VENTA DISPENSADOR 1: $ 0", 18f)
+        pantalla.addView(titulo("CARA 2", 18f))
+        val d1c2Inicial = campo("Cara 2 - Lectura inicial")
+        val d1c2Final = campo("Cara 2 - Lectura final")
+        pantalla.addView(d1c2Inicial)
+        pantalla.addView(d1c2Final)
+
+        pantalla.addView(titulo("CARA 3", 18f))
+        val d1c3Inicial = campo("Cara 3 - Lectura inicial")
+        val d1c3Final = campo("Cara 3 - Lectura final")
+        pantalla.addView(d1c3Inicial)
+        pantalla.addView(d1c3Final)
+
+        pantalla.addView(titulo("CARA 4", 18f))
+        val d1c4Inicial = campo("Cara 4 - Lectura inicial")
+        val d1c4Final = campo("Cara 4 - Lectura final")
+        pantalla.addView(d1c4Inicial)
+        pantalla.addView(d1c4Final)
+
+        val ventaD1 = titulo("VENTA DISPENSADOR 1: 0", 20f)
         pantalla.addView(ventaD1)
 
-        // DISPENSADOR 2
-        pantalla.addView(titulo("DISPENSADOR 2", 21f))
+        // ================= DISPENSADOR 2 =================
 
-        val d2Lectura1 = campo("Lectura 1 - Inicial")
-        val d2Lectura2 = campo("Lectura 1 - Final")
-        val d2Lectura3 = campo("Lectura 2 - Inicial")
-        val d2Lectura4 = campo("Lectura 2 - Final")
+        pantalla.addView(titulo("DISPENSADOR 2", 22f))
 
-        pantalla.addView(d2Lectura1)
-        pantalla.addView(d2Lectura2)
-        pantalla.addView(d2Lectura3)
-        pantalla.addView(d2Lectura4)
+        pantalla.addView(titulo("CARA 1", 18f))
+        val d2c1Inicial = campo("Cara 1 - Lectura inicial")
+        val d2c1Final = campo("Cara 1 - Lectura final")
+        pantalla.addView(d2c1Inicial)
+        pantalla.addView(d2c1Final)
 
-        val ventaD2 = titulo("VENTA DISPENSADOR 2: $ 0", 18f)
+        pantalla.addView(titulo("CARA 2", 18f))
+        val d2c2Inicial = campo("Cara 2 - Lectura inicial")
+        val d2c2Final = campo("Cara 2 - Lectura final")
+        pantalla.addView(d2c2Inicial)
+        pantalla.addView(d2c2Final)
+
+        pantalla.addView(titulo("CARA 3", 18f))
+        val d2c3Inicial = campo("Cara 3 - Lectura inicial")
+        val d2c3Final = campo("Cara 3 - Lectura final")
+        pantalla.addView(d2c3Inicial)
+        pantalla.addView(d2c3Final)
+
+        pantalla.addView(titulo("CARA 4", 18f))
+        val d2c4Inicial = campo("Cara 4 - Lectura inicial")
+        val d2c4Final = campo("Cara 4 - Lectura final")
+        pantalla.addView(d2c4Inicial)
+        pantalla.addView(d2c4Final)
+
+        val ventaD2 = titulo("VENTA DISPENSADOR 2: 0", 20f)
         pantalla.addView(ventaD2)
 
-        // CRÉDITOS
+        // ================= OTROS VALORES =================
+
         pantalla.addView(titulo("CRÉDITOS Y LUBRICANTES", 22f))
 
         val creditos = campo("Total créditos")
@@ -114,27 +145,39 @@ class MainActivity : Activity() {
         observaciones.minLines = 3
         pantalla.addView(observaciones)
 
+        // ================= CALCULAR =================
+
         val calcular = Button(this)
         calcular.text = "CALCULAR RELEVO"
 
         calcular.setOnClickListener {
 
-            val venta1 = (numero(d1Lectura2) - numero(d1Lectura1)) +
-                    (numero(d1Lectura4) - numero(d1Lectura3))
+            val cara1D1 = numero(d1c1Final) - numero(d1c1Inicial)
+            val cara2D1 = numero(d1c2Final) - numero(d1c2Inicial)
+            val cara3D1 = numero(d1c3Final) - numero(d1c3Inicial)
+            val cara4D1 = numero(d1c4Final) - numero(d1c4Inicial)
 
-            val venta2 = (numero(d2Lectura2) - numero(d2Lectura1)) +
-                    (numero(d2Lectura4) - numero(d2Lectura3))
+            val venta1 = cara1D1 + cara2D1 + cara3D1 + cara4D1
+
+            val cara1D2 = numero(d2c1Final) - numero(d2c1Inicial)
+            val cara2D2 = numero(d2c2Final) - numero(d2c2Inicial)
+            val cara3D2 = numero(d2c3Final) - numero(d2c3Inicial)
+            val cara4D2 = numero(d2c4Final) - numero(d2c4Inicial)
+
+            val venta2 = cara1D2 + cara2D2 + cara3D2 + cara4D2
 
             val total = venta1 + venta2 + numero(lubricantes)
             val efectivoEntregar = total - numero(creditos)
 
-            ventaD1.text = "VENTA DISPENSADOR 1: $ $venta1"
-            ventaD2.text = "VENTA DISPENSADOR 2: $ $venta2"
+            ventaD1.text = "VENTA DISPENSADOR 1: $venta1"
+            ventaD2.text = "VENTA DISPENSADOR 2: $venta2"
             totalVenta.text = "VENTA TOTAL: $ $total"
             efectivo.text = "EFECTIVO A ENTREGAR: $ $efectivoEntregar"
         }
 
         pantalla.addView(calcular)
+
+        // ================= GUARDAR =================
 
         val guardar = Button(this)
         guardar.text = "GUARDAR RELEVO"
