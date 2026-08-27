@@ -3,9 +3,11 @@ package com.formato.relevo
 import android.app.Activity
 import android.os.Bundle
 import android.graphics.Color
-import android.view.Gravity
 import android.text.InputType
+import android.view.Gravity
 import android.widget.*
+import java.text.NumberFormat
+import java.util.Locale
 
 class MainActivity : Activity() {
 
@@ -25,25 +27,29 @@ class MainActivity : Activity() {
             t.textSize = tamano
             t.setTextColor(Color.BLACK)
             t.gravity = Gravity.CENTER
-            t.setPadding(0, 10, 0, 10)
+            t.setPadding(0, 14, 0, 14)
             return t
         }
 
         fun campo(texto: String): EditText {
             val e = EditText(this)
             e.hint = texto
-            e.textSize = 18f
+            e.textSize = 17f
             e.inputType = InputType.TYPE_CLASS_NUMBER or
                     InputType.TYPE_NUMBER_FLAG_DECIMAL
             return e
         }
 
         fun numero(campo: EditText): Double {
-            val texto = campo.text.toString()
-                .replace(".", "")
+            val texto = campo.text.toString().trim()
                 .replace(",", ".")
 
             return texto.toDoubleOrNull() ?: 0.0
+        }
+
+        fun dinero(valor: Double): String {
+            val formato = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
+            return formato.format(valor)
         }
 
         pantalla.addView(titulo("FORMATO DE RELEVO", 28f))
@@ -60,71 +66,66 @@ class MainActivity : Activity() {
         turno.hint = "Turno: Día / Noche"
         pantalla.addView(turno)
 
+        pantalla.addView(titulo("PRECIOS DE COMBUSTIBLE", 22f))
+
+        val precioAcpm = campo("Precio ACPM por galón")
+        val precioGasolina = campo("Precio gasolina por galón")
+
+        pantalla.addView(precioAcpm)
+        pantalla.addView(precioGasolina)
+
         pantalla.addView(titulo("LECTURAS DE DISPENSADORES", 24f))
 
-        // ================= DISPENSADOR 1 =================
+        // Listas para guardar todos los campos de las 8 caras
+        val acpmInicial = mutableListOf<EditText>()
+        val acpmFinal = mutableListOf<EditText>()
+        val gasolinaInicial = mutableListOf<EditText>()
+        val gasolinaFinal = mutableListOf<EditText>()
 
-        pantalla.addView(titulo("DISPENSADOR 1", 22f))
+        // Creamos los 2 dispensadores y sus 4 caras
+        for (dispensador in 1..2) {
 
-        pantalla.addView(titulo("CARA 1", 18f))
-        val d1c1Inicial = campo("Cara 1 - Lectura inicial")
-        val d1c1Final = campo("Cara 1 - Lectura final")
-        pantalla.addView(d1c1Inicial)
-        pantalla.addView(d1c1Final)
+            pantalla.addView(titulo("DISPENSADOR $dispensador", 23f))
 
-        pantalla.addView(titulo("CARA 2", 18f))
-        val d1c2Inicial = campo("Cara 2 - Lectura inicial")
-        val d1c2Final = campo("Cara 2 - Lectura final")
-        pantalla.addView(d1c2Inicial)
-        pantalla.addView(d1c2Final)
+            for (cara in 1..4) {
 
-        pantalla.addView(titulo("CARA 3", 18f))
-        val d1c3Inicial = campo("Cara 3 - Lectura inicial")
-        val d1c3Final = campo("Cara 3 - Lectura final")
-        pantalla.addView(d1c3Inicial)
-        pantalla.addView(d1c3Final)
+                pantalla.addView(titulo("CARA $cara", 20f))
 
-        pantalla.addView(titulo("CARA 4", 18f))
-        val d1c4Inicial = campo("Cara 4 - Lectura inicial")
-        val d1c4Final = campo("Cara 4 - Lectura final")
-        pantalla.addView(d1c4Inicial)
-        pantalla.addView(d1c4Final)
+                pantalla.addView(titulo("A.C.P.M.", 17f))
 
-        val ventaD1 = titulo("VENTA DISPENSADOR 1: 0", 20f)
-        pantalla.addView(ventaD1)
+                val acpmIni = campo("ACPM - Lectura inicial")
+                val acpmFin = campo("ACPM - Lectura final")
 
-        // ================= DISPENSADOR 2 =================
+                pantalla.addView(acpmIni)
+                pantalla.addView(acpmFin)
 
-        pantalla.addView(titulo("DISPENSADOR 2", 22f))
+                acpmInicial.add(acpmIni)
+                acpmFinal.add(acpmFin)
 
-        pantalla.addView(titulo("CARA 1", 18f))
-        val d2c1Inicial = campo("Cara 1 - Lectura inicial")
-        val d2c1Final = campo("Cara 1 - Lectura final")
-        pantalla.addView(d2c1Inicial)
-        pantalla.addView(d2c1Final)
+                pantalla.addView(titulo("GASOLINA", 17f))
 
-        pantalla.addView(titulo("CARA 2", 18f))
-        val d2c2Inicial = campo("Cara 2 - Lectura inicial")
-        val d2c2Final = campo("Cara 2 - Lectura final")
-        pantalla.addView(d2c2Inicial)
-        pantalla.addView(d2c2Final)
+                val gasIni = campo("Gasolina - Lectura inicial")
+                val gasFin = campo("Gasolina - Lectura final")
 
-        pantalla.addView(titulo("CARA 3", 18f))
-        val d2c3Inicial = campo("Cara 3 - Lectura inicial")
-        val d2c3Final = campo("Cara 3 - Lectura final")
-        pantalla.addView(d2c3Inicial)
-        pantalla.addView(d2c3Final)
+                pantalla.addView(gasIni)
+                pantalla.addView(gasFin)
 
-        pantalla.addView(titulo("CARA 4", 18f))
-        val d2c4Inicial = campo("Cara 4 - Lectura inicial")
-        val d2c4Final = campo("Cara 4 - Lectura final")
-        pantalla.addView(d2c4Inicial)
-        pantalla.addView(d2c4Final)
+                gasolinaInicial.add(gasIni)
+                gasolinaFinal.add(gasFin)
+            }
+        }
 
-        val ventaD2 = titulo("VENTA DISPENSADOR 2: 0", 20f)
-        pantalla.addView(ventaD2)
+        // Resultados
+        pantalla.addView(titulo("RESUMEN DE VENTAS", 24f))
 
-        // ================= OTROS VALORES =================
+        val ventaCombustible = titulo("VENTA COMBUSTIBLE: $ 0", 20f)
+        pantalla.addView(ventaCombustible)
+
+        val ventaAcpm = titulo("VENTA ACPM: $ 0", 18f)
+        pantalla.addView(ventaAcpm)
+
+        val ventaGasolina = titulo("VENTA GASOLINA: $ 0", 18f)
+        pantalla.addView(ventaGasolina)
 
         pantalla.addView(titulo("CRÉDITOS Y LUBRICANTES", 22f))
 
@@ -145,40 +146,59 @@ class MainActivity : Activity() {
         observaciones.minLines = 3
         pantalla.addView(observaciones)
 
-        // ================= CALCULAR =================
-
+        // Botón calcular
         val calcular = Button(this)
         calcular.text = "CALCULAR RELEVO"
 
         calcular.setOnClickListener {
 
-            val cara1D1 = numero(d1c1Final) - numero(d1c1Inicial)
-            val cara2D1 = numero(d1c2Final) - numero(d1c2Inicial)
-            val cara3D1 = numero(d1c3Final) - numero(d1c3Inicial)
-            val cara4D1 = numero(d1c4Final) - numero(d1c4Inicial)
+            var totalGalonesAcpm = 0.0
+            var totalGalonesGasolina = 0.0
 
-            val venta1 = cara1D1 + cara2D1 + cara3D1 + cara4D1
+            // Sumamos las 8 caras
+            for (i in 0 until 8) {
 
-            val cara1D2 = numero(d2c1Final) - numero(d2c1Inicial)
-            val cara2D2 = numero(d2c2Final) - numero(d2c2Inicial)
-            val cara3D2 = numero(d2c3Final) - numero(d2c3Inicial)
-            val cara4D2 = numero(d2c4Final) - numero(d2c4Inicial)
+                val ventaA = numero(acpmFinal[i]) - numero(acpmInicial[i])
+                val ventaG = numero(gasolinaFinal[i]) - numero(gasolinaInicial[i])
 
-            val venta2 = cara1D2 + cara2D2 + cara3D2 + cara4D2
+                totalGalonesAcpm += ventaA
+                totalGalonesGasolina += ventaG
+            }
 
-            val total = venta1 + venta2 + numero(lubricantes)
-            val efectivoEntregar = total - numero(creditos)
+            val totalDineroAcpm =
+                totalGalonesAcpm * numero(precioAcpm)
 
-            ventaD1.text = "VENTA DISPENSADOR 1: $venta1"
-            ventaD2.text = "VENTA DISPENSADOR 2: $venta2"
-            totalVenta.text = "VENTA TOTAL: $ $total"
-            efectivo.text = "EFECTIVO A ENTREGAR: $ $efectivoEntregar"
+            val totalDineroGasolina =
+                totalGalonesGasolina * numero(precioGasolina)
+
+            val totalCombustible =
+                totalDineroAcpm + totalDineroGasolina
+
+            val totalGeneral =
+                totalCombustible + numero(lubricantes)
+
+            val efectivoEntregar =
+                totalGeneral - numero(creditos)
+
+            ventaAcpm.text =
+                "VENTA ACPM: ${String.format("%.2f", totalGalonesAcpm)} galones = ${dinero(totalDineroAcpm)}"
+
+            ventaGasolina.text =
+                "VENTA GASOLINA: ${String.format("%.2f", totalGalonesGasolina)} galones = ${dinero(totalDineroGasolina)}"
+
+            ventaCombustible.text =
+                "VENTA COMBUSTIBLE: ${dinero(totalCombustible)}"
+
+            totalVenta.text =
+                "VENTA TOTAL: ${dinero(totalGeneral)}"
+
+            efectivo.text =
+                "EFECTIVO A ENTREGAR: ${dinero(efectivoEntregar)}"
         }
 
         pantalla.addView(calcular)
 
-        // ================= GUARDAR =================
-
+        // Botón guardar
         val guardar = Button(this)
         guardar.text = "GUARDAR RELEVO"
 
