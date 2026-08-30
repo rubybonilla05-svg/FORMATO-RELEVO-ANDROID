@@ -149,7 +149,8 @@ class MainActivity : Activity() {
         listaCreditos.orientation = LinearLayout.VERTICAL
         pantalla.addView(listaCreditos)
 
-        val camposCredito = mutableListOf<EditText>()
+        val camposCredito = mutableListOf<EditText>() 
+        val clientesCredito = mutableListOf<EditText>()
 
         fun agregarCredito() {
 
@@ -179,11 +180,13 @@ class MainActivity : Activity() {
             fila.addView(eliminar)
 
             listaCreditos.addView(fila)
-            camposCredito.add(valor)
+            camposCredito.add(valor) 
+            clientesCredito.add(cliente)
 
             eliminar.setOnClickListener {
                 listaCreditos.removeView(fila)
-                camposCredito.remove(valor)
+                camposCredito.remove(valor) 
+                clientesCredito.remove(cliente)
             }
         }
 
