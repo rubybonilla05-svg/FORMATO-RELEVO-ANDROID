@@ -308,7 +308,152 @@ class MainActivity : Activity() {
             ).show()
         }
 
+        pantalla.addView(guardar) 
         pantalla.addView(guardar)
+
+val exportarPdf = Button(this)
+exportarPdf.text = "EXPORTAR PDF"
+val exportarPdf = Button(this)
+exportarPdf.text = "EXPORTAR PDF"
+
+exportarPdf.setOnClickListener {
+
+    val documento = PdfDocument()
+
+    val paginaInfo = PdfDocument.PageInfo.Builder(
+        595,
+        842,
+        1
+    ).create()
+
+    val pagina = documento.startPage(paginaInfo)
+    val canvas = pagina.canvas
+
+    val pintura = android.graphics.Paint()
+    pintura.textSize = 16f
+
+    var y = 50f
+
+    canvas.drawText("FORMATO DE RELEVO", 180f, y, pintura)
+    y += 40f
+
+    canvas.drawText(
+        "ACPM: ${String.format("%.2f", galonesAcpm)} galones - ${dinero(dineroAcpm)}",
+        30f, y, pintura
+    )
+
+    y += 30f
+
+    canvas.drawText(
+        "GASOLINA: ${String.format("%.2f", galonesGasolina)} galones - ${dinero(dineroGasolina)}",
+        30f, y, pintura
+    )
+
+    y += 30f
+
+    canvas.drawText(
+        "ACEITES/LUBRICANTES: ${dinero(numero(lubricantes))}",
+        30f, y, pintura
+    )
+
+    y += 40f
+
+    canvas.drawText("CRÉDITOS:", 30f, y, pintura)
+    y += 30f
+
+    for (i in camposCredito.indices) {
+
+        val nombre =
+            clientesCredito[i].text.toString()
+
+        val valorCredito =
+            numero(camposCredito[i])
+
+        canvas.drawText(
+            "$nombre: ${dinero(valorCredito)}",
+            50f, y, pintura
+        )
+
+        y += 25f
+    }
+
+    y += 15f
+
+    var sumaCreditosPdf = 0.0
+
+    for (credito in camposCredito) {
+        sumaCreditosPdf += numero(credito)
+    }
+
+    canvas.drawText(
+        "TOTAL CRÉDITOS: ${dinero(sumaCreditosPdf)}",
+        30f, y, pintura
+    )
+
+    y += 40f
+
+    var galonesAcpmPdf = 0.0
+    var galonesGasolinaPdf = 0.0
+
+    for (i in 0 until acpmInicial.size) {
+        galonesAcpmPdf +=
+            numero(acpmFinal[i]) - numero(acpmInicial[i])
+
+        galonesGasolinaPdf +=
+            numero(gasolinaFinal[i]) - numero(gasolinaInicial[i])
+    }
+
+    val dineroAcpmPdf =
+        galonesAcpmPdf * numero(precioAcpm)
+
+    val dineroGasolinaPdf =
+        galonesGasolinaPdf * numero(precioGasolina)
+
+    val combustiblePdf =
+        dineroAcpmPdf + dineroGasolinaPdf
+
+    val totalPdf =
+        combustiblePdf + numero(lubricantes)
+
+    val efectivoPdf =
+        totalPdf - sumaCreditosPdf
+
+    canvas.drawText(
+        "VENTA TOTAL: ${dinero(totalPdf)}",
+        30f, y, pintura
+    )
+
+    y += 30f
+
+    canvas.drawText(
+        "EFECTIVO A ENTREGAR: ${dinero(efectivoPdf)}",
+        30f, y, pintura
+    )
+
+    documento.finishPage(pagina)
+
+    val archivo = File(
+        getExternalFilesDir(null),
+        "Relevo.pdf"
+    )
+
+    documento.writeTo(
+        FileOutputStream(archivo)
+    )
+
+    documento.close()
+
+    Toast.makeText(
+        this,
+        "PDF creado correctamente",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
+pantalla.addView(exportarPdf)
+pantalla.addView(exportarPdf)
+
+setContentView(scroll)
 
         setContentView(scroll)
     }
