@@ -461,9 +461,19 @@ exportarPdf.setOnClickListener {
 
     documento.finishPage(pagina)
 
-    val archivo = File(
-        getExternalFilesDir(null),
-        "Relevo.pdf"
+    val carpetaDescargas =
+    android.os.Environment.getExternalStoragePublicDirectory(
+        android.os.Environment.DIRECTORY_DOWNLOADS
+    )
+
+if (!carpetaDescargas.exists()) {
+    carpetaDescargas.mkdirs()
+}
+
+val archivo = File(
+    carpetaDescargas,
+    "Relevo.pdf"
+)
     )
 
     documento.writeTo(
