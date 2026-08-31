@@ -12,6 +12,7 @@ import java.io.FileOutputStream
 import java.text.NumberFormat
 import java.util.Locale
 import java.io.File
+import android.graphics.pdf.PdfDocument
 
 class MainActivity : Activity() {
 
@@ -311,89 +312,14 @@ class MainActivity : Activity() {
         }
 
         pantalla.addView(guardar) 
-        pantalla.addView(guardar)
 
-val exportarPdf = Button(this)
-exportarPdf.text = "EXPORTAR PDF"
+
 val exportarPdf = Button(this)
 exportarPdf.text = "EXPORTAR PDF"
 
 exportarPdf.setOnClickListener {
 
-    val documento = PdfDocument()
-
-    val paginaInfo = PdfDocument.PageInfo.Builder(
-        595,
-        842,
-        1
-    ).create()
-
-    val pagina = documento.startPage(paginaInfo)
-    val canvas = pagina.canvas
-
-    val pintura = android.graphics.Paint()
-    pintura.textSize = 16f
-
-    var y = 50f
-
-    canvas.drawText("FORMATO DE RELEVO", 180f, y, pintura)
-    y += 40f
-
-    canvas.drawText(
-        "ACPM: ${String.format("%.2f", galonesAcpm)} galones - ${dinero(dineroAcpm)}",
-        30f, y, pintura
-    )
-
-    y += 30f
-
-    canvas.drawText(
-        "GASOLINA: ${String.format("%.2f", galonesGasolina)} galones - ${dinero(dineroGasolina)}",
-        30f, y, pintura
-    )
-
-    y += 30f
-
-    canvas.drawText(
-        "ACEITES/LUBRICANTES: ${dinero(numero(lubricantes))}",
-        30f, y, pintura
-    )
-
-    y += 40f
-
-    canvas.drawText("CRÉDITOS:", 30f, y, pintura)
-    y += 30f
-
-    for (i in camposCredito.indices) {
-
-        val nombre =
-            clientesCredito[i].text.toString()
-
-        val valorCredito =
-            numero(camposCredito[i])
-
-        canvas.drawText(
-            "$nombre: ${dinero(valorCredito)}",
-            50f, y, pintura
-        )
-
-        y += 25f
-    }
-
-    y += 15f
-
-    var sumaCreditosPdf = 0.0
-
-    for (credito in camposCredito) {
-        sumaCreditosPdf += numero(credito)
-    }
-
-    canvas.drawText(
-        "TOTAL CRÉDITOS: ${dinero(sumaCreditosPdf)}",
-        30f, y, pintura
-    )
-
-    y += 40f
-
+    // Calcular ventas para el PDF
     var galonesAcpmPdf = 0.0
     var galonesGasolinaPdf = 0.0
 
@@ -414,22 +340,123 @@ exportarPdf.setOnClickListener {
     val combustiblePdf =
         dineroAcpmPdf + dineroGasolinaPdf
 
+    var sumaCreditosPdf = 0.0
+
+    for (credito in camposCredito) {
+        sumaCreditosPdf += numero(credito)
+    }
+
     val totalPdf =
         combustiblePdf + numero(lubricantes)
 
     val efectivoPdf =
         totalPdf - sumaCreditosPdf
 
+    // Crear documento PDF
+    val documento = PdfDocument()
+
+    val paginaInfo = PdfDocument.PageInfo.Builder(
+        595,
+        842,
+        1
+    ).create()
+
+    val pagina = documento.startPage(paginaInfo)
+    val canvas = pagina.canvas
+
+    val pintura = android.graphics.Paint()
+    pintura.textSize = 16f
+
+    var y = 50f
+
+    canvas.drawText(
+        "FORMATO DE RELEVO",
+        180f,
+        y,
+        pintura
+    )
+
+    y += 40f
+
+    canvas.drawText(
+        "ACPM: ${String.format("%.2f", galonesAcpmPdf)} galones - ${dinero(dineroAcpmPdf)}",
+        30f,
+        y,
+        pintura
+    )
+
+    y += 30f
+
+    canvas.drawText(
+        "GASOLINA: ${String.format("%.2f", galonesGasolinaPdf)} galones - ${dinero(dineroGasolinaPdf)}",
+        30f,
+        y,
+        pintura
+    )
+
+    y += 30f
+
+    canvas.drawText(
+        "ACEITES/LUBRICANTES: ${dinero(numero(lubricantes))}",
+        30f,
+        y,
+        pintura
+    )
+
+    y += 40f
+
+    canvas.drawText(
+        "CRÉDITOS:",
+        30f,
+        y,
+        pintura
+    )
+
+    y += 30f
+
+    for (i in camposCredito.indices) {
+
+        val nombre =
+            clientesCredito[i].text.toString()
+
+        val valorCredito =
+            numero(camposCredito[i])
+
+        canvas.drawText(
+            "$nombre: ${dinero(valorCredito)}",
+            50f,
+            y,
+            pintura
+        )
+
+        y += 25f
+    }
+
+    y += 15f
+
+    canvas.drawText(
+        "TOTAL CRÉDITOS: ${dinero(sumaCreditosPdf)}",
+        30f,
+        y,
+        pintura
+    )
+
+    y += 40f
+
     canvas.drawText(
         "VENTA TOTAL: ${dinero(totalPdf)}",
-        30f, y, pintura
+        30f,
+        y,
+        pintura
     )
 
     y += 30f
 
     canvas.drawText(
         "EFECTIVO A ENTREGAR: ${dinero(efectivoPdf)}",
-        30f, y, pintura
+        30f,
+        y,
+        pintura
     )
 
     documento.finishPage(pagina)
@@ -453,7 +480,6 @@ exportarPdf.setOnClickListener {
 }
 
 pantalla.addView(exportarPdf)
-setContentView(scroll)
 
         setContentView(scroll)
     }
