@@ -11,6 +11,7 @@ import android.widget.*
 import java.io.FileOutputStream
 import java.text.NumberFormat
 import java.util.Locale
+import java.io.File
 
 class MainActivity : Activity() {
 
