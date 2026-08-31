@@ -452,8 +452,6 @@ exportarPdf.setOnClickListener {
 }
 
 pantalla.addView(exportarPdf)
-pantalla.addView(exportarPdf)
-
 setContentView(scroll)
 
         setContentView(scroll)
