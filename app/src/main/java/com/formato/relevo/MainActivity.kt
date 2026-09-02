@@ -474,7 +474,6 @@ val archivo = File(
     carpetaDescargas,
     "Relevo.pdf"
 )
-    )
 
     documento.writeTo(
         FileOutputStream(archivo)
