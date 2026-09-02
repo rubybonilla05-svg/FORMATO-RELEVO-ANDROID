@@ -13,6 +13,8 @@ import java.text.NumberFormat
 import java.util.Locale
 import java.io.File
 import android.graphics.pdf.PdfDocument
+import android.content.Intent
+import androidx.core.content.FileProvider
 
 class MainActivity : Activity() {
 
@@ -319,7 +321,6 @@ exportarPdf.text = "EXPORTAR PDF"
 
 exportarPdf.setOnClickListener {
 
-    // Calcular ventas para el PDF
     var galonesAcpmPdf = 0.0
     var galonesGasolinaPdf = 0.0
 
@@ -352,7 +353,7 @@ exportarPdf.setOnClickListener {
     val efectivoPdf =
         totalPdf - sumaCreditosPdf
 
-    // Crear documento PDF
+    // Crear PDF
     val documento = PdfDocument()
 
     val paginaInfo = PdfDocument.PageInfo.Builder(
@@ -461,19 +462,11 @@ exportarPdf.setOnClickListener {
 
     documento.finishPage(pagina)
 
-    val carpetaDescargas =
-    android.os.Environment.getExternalStoragePublicDirectory(
-        android.os.Environment.DIRECTORY_DOWNLOADS
+    // Guardar PDF en una carpeta privada de la aplicación
+    val archivo = File(
+        cacheDir,
+        "Relevo.pdf"
     )
-
-if (!carpetaDescargas.exists()) {
-    carpetaDescargas.mkdirs()
-}
-
-val archivo = File(
-    carpetaDescargas,
-    "Relevo.pdf"
-)
 
     documento.writeTo(
         FileOutputStream(archivo)
@@ -481,11 +474,24 @@ val archivo = File(
 
     documento.close()
 
-    Toast.makeText(
+    // Compartir el PDF
+    val uri = FileProvider.getUriForFile(
         this,
-        "PDF creado correctamente",
-        Toast.LENGTH_LONG
-    ).show()
+        "${packageName}.provider",
+        archivo
+    )
+
+    val compartir = Intent(Intent.ACTION_SEND)
+    compartir.type = "application/pdf"
+    compartir.putExtra(Intent.EXTRA_STREAM, uri)
+    compartir.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+    startActivity(
+        Intent.createChooser(
+            compartir,
+            "Compartir PDF"
+        )
+    )
 }
 
 pantalla.addView(exportarPdf)
