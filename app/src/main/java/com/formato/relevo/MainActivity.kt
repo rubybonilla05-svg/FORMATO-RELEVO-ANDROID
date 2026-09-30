@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.text.InputType
 import android.view.Gravity
 import android.view.ViewGroup
-import android.view.View
 import android.widget.*
 import java.io.FileOutputStream
 import java.text.NumberFormat
@@ -59,14 +58,14 @@ class MainActivity : Activity() {
 
         // ================= ENCABEZADO =================
 
-        pantalla.addView(titulo("FORMATO DE RELEVO", 28f))
+        pantalla.addView(titulo("RELEVO POR TURNOS", 28f))
 
         val fecha = EditText(this)
         fecha.hint = "Fecha"
         pantalla.addView(fecha)
 
         val operario = EditText(this)
-        operario.hint = "Nombre del operario"
+        operario.hint = "Nombre del vendedor"
         pantalla.addView(operario)
 
         val turno = EditText(this)
@@ -92,7 +91,6 @@ class MainActivity : Activity() {
         val gasolinaInicial = mutableListOf<EditText>()
         val gasolinaFinal = mutableListOf<EditText>()
 
-        // 2 dispensadores, cada uno con 2 caras
         for (dispensador in 1..2) {
 
             pantalla.addView(titulo("DISPENSADOR $dispensador", 23f))
@@ -154,7 +152,7 @@ class MainActivity : Activity() {
         listaCreditos.orientation = LinearLayout.VERTICAL
         pantalla.addView(listaCreditos)
 
-        val camposCredito = mutableListOf<EditText>() 
+        val camposCredito = mutableListOf<EditText>()
         val clientesCredito = mutableListOf<EditText>()
 
         fun agregarCredito() {
@@ -185,12 +183,12 @@ class MainActivity : Activity() {
             fila.addView(eliminar)
 
             listaCreditos.addView(fila)
-            camposCredito.add(valor) 
+            camposCredito.add(valor)
             clientesCredito.add(cliente)
 
             eliminar.setOnClickListener {
                 listaCreditos.removeView(fila)
-                camposCredito.remove(valor) 
+                camposCredito.remove(valor)
                 clientesCredito.remove(cliente)
             }
         }
@@ -204,7 +202,6 @@ class MainActivity : Activity() {
 
         pantalla.addView(agregarCredito)
 
-        // Agrega el primer crédito automáticamente
         agregarCredito()
 
         val totalCreditos =
@@ -232,9 +229,12 @@ class MainActivity : Activity() {
         pantalla.addView(totalVenta)
         pantalla.addView(efectivo)
 
+        // ================= OBSERVACIONES =================
+
         val observaciones = EditText(this)
         observaciones.hint = "Observaciones"
         observaciones.minLines = 3
+        observaciones.gravity = Gravity.TOP
         pantalla.addView(observaciones)
 
         // ================= CALCULAR =================
@@ -247,8 +247,6 @@ class MainActivity : Activity() {
             var galonesAcpm = 0.0
             var galonesGasolina = 0.0
 
-            // Hay 4 caras en total:
-            // 2 del dispensador 1 + 2 del dispensador 2
             for (i in 0 until acpmInicial.size) {
 
                 galonesAcpm +=
@@ -313,188 +311,323 @@ class MainActivity : Activity() {
             ).show()
         }
 
-        pantalla.addView(guardar) 
+        pantalla.addView(guardar)
 
+        // ================= EXPORTAR PDF =================
 
-val exportarPdf = Button(this)
-exportarPdf.text = "EXPORTAR PDF"
+        val exportarPdf = Button(this)
+        exportarPdf.text = "EXPORTAR PDF"
 
-exportarPdf.setOnClickListener {
+        exportarPdf.setOnClickListener {
 
-    var galonesAcpmPdf = 0.0
-    var galonesGasolinaPdf = 0.0
+            var galonesAcpmPdf = 0.0
+            var galonesGasolinaPdf = 0.0
 
-    for (i in 0 until acpmInicial.size) {
-        galonesAcpmPdf +=
-            numero(acpmFinal[i]) - numero(acpmInicial[i])
+            for (i in 0 until acpmInicial.size) {
 
-        galonesGasolinaPdf +=
-            numero(gasolinaFinal[i]) - numero(gasolinaInicial[i])
-    }
+                galonesAcpmPdf +=
+                    numero(acpmFinal[i]) - numero(acpmInicial[i])
 
-    val dineroAcpmPdf =
-        galonesAcpmPdf * numero(precioAcpm)
+                galonesGasolinaPdf +=
+                    numero(gasolinaFinal[i]) - numero(gasolinaInicial[i])
+            }
 
-    val dineroGasolinaPdf =
-        galonesGasolinaPdf * numero(precioGasolina)
+            val dineroAcpmPdf =
+                galonesAcpmPdf * numero(precioAcpm)
 
-    val combustiblePdf =
-        dineroAcpmPdf + dineroGasolinaPdf
+            val dineroGasolinaPdf =
+                galonesGasolinaPdf * numero(precioGasolina)
 
-    var sumaCreditosPdf = 0.0
+            val combustiblePdf =
+                dineroAcpmPdf + dineroGasolinaPdf
 
-    for (credito in camposCredito) {
-        sumaCreditosPdf += numero(credito)
-    }
+            var sumaCreditosPdf = 0.0
 
-    val totalPdf =
-        combustiblePdf + numero(lubricantes)
+            for (credito in camposCredito) {
+                sumaCreditosPdf += numero(credito)
+            }
 
-    val efectivoPdf =
-        totalPdf - sumaCreditosPdf
+            val totalPdf =
+                combustiblePdf + numero(lubricantes)
 
-    // Crear PDF
-    val documento = PdfDocument()
+            val efectivoPdf =
+                totalPdf - sumaCreditosPdf
 
-    val paginaInfo = PdfDocument.PageInfo.Builder(
-        595,
-        842,
-        1
-    ).create()
+            // ================= CREAR PDF =================
 
-    val pagina = documento.startPage(paginaInfo)
-    val canvas = pagina.canvas
+            val documento = PdfDocument()
 
-    val pintura = android.graphics.Paint()
-    pintura.textSize = 16f
+            val paginaInfo = PdfDocument.PageInfo.Builder(
+                595,
+                842,
+                1
+            ).create()
 
-    var y = 50f
+            val pagina = documento.startPage(paginaInfo)
+            val canvas = pagina.canvas
 
-    canvas.drawText(
-        "FORMATO DE RELEVO",
-        180f,
-        y,
-        pintura
-    )
+            val pintura = android.graphics.Paint()
 
-    y += 40f
+            pintura.textSize = 22f
+            pintura.isFakeBoldText = true
 
-    canvas.drawText(
-        "ACPM: ${String.format("%.2f", galonesAcpmPdf)} galones - ${dinero(dineroAcpmPdf)}",
-        30f,
-        y,
-        pintura
-    )
+            var y = 45f
 
-    y += 30f
+            canvas.drawText(
+                "RELEVO POR TURNOS",
+                185f,
+                y,
+                pintura
+            )
 
-    canvas.drawText(
-        "GASOLINA: ${String.format("%.2f", galonesGasolinaPdf)} galones - ${dinero(dineroGasolinaPdf)}",
-        30f,
-        y,
-        pintura
-    )
+            pintura.textSize = 15f
+            pintura.isFakeBoldText = false
 
-    y += 30f
+            y += 40f
 
-    canvas.drawText(
-        "ACEITES/LUBRICANTES: ${dinero(numero(lubricantes))}",
-        30f,
-        y,
-        pintura
-    )
+            // Datos ingresados por el vendedor
 
-    y += 40f
+            canvas.drawText(
+                "Fecha: ${fecha.text.toString()}",
+                40f,
+                y,
+                pintura
+            )
 
-    canvas.drawText(
-        "CRÉDITOS:",
-        30f,
-        y,
-        pintura
-    )
+            y += 25f
 
-    y += 30f
+            canvas.drawText(
+                "Turno: ${turno.text.toString()}",
+                40f,
+                y,
+                pintura
+            )
 
-    for (i in camposCredito.indices) {
+            y += 25f
 
-        val nombre =
-            clientesCredito[i].text.toString()
+            canvas.drawText(
+                "Vendedor: ${operario.text.toString()}",
+                40f,
+                y,
+                pintura
+            )
 
-        val valorCredito =
-            numero(camposCredito[i])
+            y += 40f
 
-        canvas.drawText(
-            "$nombre: ${dinero(valorCredito)}",
-            50f,
-            y,
-            pintura
-        )
+            pintura.textSize = 18f
+            pintura.isFakeBoldText = true
 
-        y += 25f
-    }
+            canvas.drawText(
+                "RESUMEN DE VENTAS",
+                40f,
+                y,
+                pintura
+            )
 
-    y += 15f
+            pintura.textSize = 15f
+            pintura.isFakeBoldText = false
 
-    canvas.drawText(
-        "TOTAL CRÉDITOS: ${dinero(sumaCreditosPdf)}",
-        30f,
-        y,
-        pintura
-    )
+            y += 35f
 
-    y += 40f
+            canvas.drawText(
+                "ACPM: ${String.format("%.2f", galonesAcpmPdf)} galones",
+                40f,
+                y,
+                pintura
+            )
 
-    canvas.drawText(
-        "VENTA TOTAL: ${dinero(totalPdf)}",
-        30f,
-        y,
-        pintura
-    )
+            y += 25f
 
-    y += 30f
+            canvas.drawText(
+                "Efectivo ACPM: ${dinero(dineroAcpmPdf)}",
+                60f,
+                y,
+                pintura
+            )
 
-    canvas.drawText(
-        "EFECTIVO A ENTREGAR: ${dinero(efectivoPdf)}",
-        30f,
-        y,
-        pintura
-    )
+            y += 30f
 
-    documento.finishPage(pagina)
+            canvas.drawText(
+                "Gasolina: ${String.format("%.2f", galonesGasolinaPdf)} galones",
+                40f,
+                y,
+                pintura
+            )
 
-    // Guardar PDF en una carpeta privada de la aplicación
-    val archivo = File(
-        cacheDir,
-        "Relevo.pdf"
-    )
+            y += 25f
 
-    documento.writeTo(
-        FileOutputStream(archivo)
-    )
+            canvas.drawText(
+                "Efectivo gasolina: ${dinero(dineroGasolinaPdf)}",
+                60f,
+                y,
+                pintura
+            )
 
-    documento.close()
+            y += 30f
 
-    // Compartir el PDF
-    val uri = FileProvider.getUriForFile(
-        this,
-        "${packageName}.provider",
-        archivo
-    )
+            canvas.drawText(
+                "Aceites/Lubricantes: ${dinero(numero(lubricantes))}",
+                40f,
+                y,
+                pintura
+            )
 
-    val compartir = Intent(Intent.ACTION_SEND)
-    compartir.type = "application/pdf"
-    compartir.putExtra(Intent.EXTRA_STREAM, uri)
-    compartir.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            y += 40f
 
-    startActivity(
-        Intent.createChooser(
-            compartir,
-            "Compartir PDF"
-        )
-    )
-}
+            pintura.textSize = 18f
+            pintura.isFakeBoldText = true
 
-pantalla.addView(exportarPdf)
+            canvas.drawText(
+                "CRÉDITOS",
+                40f,
+                y,
+                pintura
+            )
+
+            pintura.textSize = 15f
+            pintura.isFakeBoldText = false
+
+            y += 30f
+
+            for (i in camposCredito.indices) {
+
+                val nombre =
+                    clientesCredito[i].text.toString()
+
+                val valorCredito =
+                    numero(camposCredito[i])
+
+                canvas.drawText(
+                    "$nombre: ${dinero(valorCredito)}",
+                    60f,
+                    y,
+                    pintura
+                )
+
+                y += 25f
+            }
+
+            y += 10f
+
+            pintura.isFakeBoldText = true
+
+            canvas.drawText(
+                "TOTAL CRÉDITOS: ${dinero(sumaCreditosPdf)}",
+                40f,
+                y,
+                pintura
+            )
+
+            y += 35f
+
+            canvas.drawText(
+                "VENTA TOTAL: ${dinero(totalPdf)}",
+                40f,
+                y,
+                pintura
+            )
+
+            y += 30f
+
+            canvas.drawText(
+                "EFECTIVO A ENTREGAR: ${dinero(efectivoPdf)}",
+                40f,
+                y,
+                pintura
+            )
+
+            // ================= OBSERVACIONES =================
+
+            y += 45f
+
+            pintura.textSize = 18f
+            pintura.isFakeBoldText = true
+
+            canvas.drawText(
+                "OBSERVACIONES",
+                40f,
+                y,
+                pintura
+            )
+
+            pintura.textSize = 15f
+            pintura.isFakeBoldText = false
+
+            y += 28f
+
+            val textoObservaciones =
+                observaciones.text.toString()
+
+            if (textoObservaciones.isNotEmpty()) {
+
+                val lineas =
+                    textoObservaciones.split("\n")
+
+                for (linea in lineas) {
+
+                    canvas.drawText(
+                        linea,
+                        40f,
+                        y,
+                        pintura
+                    )
+
+                    y += 22f
+                }
+
+            } else {
+
+                canvas.drawText(
+                    "Sin observaciones",
+                    40f,
+                    y,
+                    pintura
+                )
+            }
+
+            documento.finishPage(pagina)
+
+            // Guardar PDF temporalmente
+            val archivo = File(
+                cacheDir,
+                "Relevo_por_Turnos.pdf"
+            )
+
+            documento.writeTo(
+                FileOutputStream(archivo)
+            )
+
+            documento.close()
+
+            // Compartir PDF
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${packageName}.provider",
+                archivo
+            )
+
+            val compartir = Intent(Intent.ACTION_SEND)
+
+            compartir.type = "application/pdf"
+
+            compartir.putExtra(
+                Intent.EXTRA_STREAM,
+                uri
+            )
+
+            compartir.addFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+
+            startActivity(
+                Intent.createChooser(
+                    compartir,
+                    "Compartir PDF"
+                )
+            )
+        }
+
+        pantalla.addView(exportarPdf)
 
         setContentView(scroll)
     }
